@@ -89,6 +89,12 @@ const DEFAULT_DATA = {
     { name: "חברה קדישא", role: "ענייני קבורה", category: "חסד", phone: "050-0000006" }
   ],
 
+  /* ---- ישיבות ---- */
+  yeshivos: [],
+
+  /* ---- שטיבלך ---- */
+  shtieblach: [],
+
   /* ---- חדשות ---- (התאריך הראשון ברשימה מוצג ראשון) */
   news: [
     {
@@ -222,6 +228,42 @@ function renderPhonebook() {
         <div class="contact-role">${escapeHtml(c.role)}</div>
       </div>
       <a class="contact-phone" href="${formatPhoneHref(c.phone)}">${escapeHtml(c.phone)}</a>
+    </div>
+  `).join("");
+}
+
+function renderYeshivos() {
+  const el = document.getElementById("yeshivos-content");
+  const list = DATA.yeshivos || [];
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state">אין כרגע ישיבות ברשימה.</div>`;
+    return;
+  }
+  el.innerHTML = list.map((y) => `
+    <div class="card contact-card">
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(y.name)}</div>
+        ${y.address ? `<div class="contact-role">${escapeHtml(y.address)}</div>` : ""}
+      </div>
+      ${y.phone ? `<a class="contact-phone" href="${formatPhoneHref(y.phone)}">${escapeHtml(y.phone)}</a>` : ""}
+    </div>
+  `).join("");
+}
+
+function renderShtieblach() {
+  const el = document.getElementById("shtieblach-content");
+  const list = DATA.shtieblach || [];
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state">אין כרגע שטיבלך ברשימה.</div>`;
+    return;
+  }
+  el.innerHTML = list.map((s) => `
+    <div class="card contact-card">
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(s.name)}</div>
+        ${s.address ? `<div class="contact-role">${escapeHtml(s.address)}</div>` : ""}
+      </div>
+      ${s.phone ? `<a class="contact-phone" href="${formatPhoneHref(s.phone)}">${escapeHtml(s.phone)}</a>` : ""}
     </div>
   `).join("");
 }
@@ -420,10 +462,19 @@ function switchTab(tabName) {
     btn.classList.toggle("active", btn.dataset.tab === tabName);
   });
   document.getElementById("main").scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
-  if (tabName === "members" && !membersInitStarted) {
+  if (tabName === "phonebook" && !membersInitStarted) {
     membersInitStarted = true;
     initMembers();
   }
+}
+
+function switchSubtab(name) {
+  document.querySelectorAll("#tab-phonebook .subtab-panel").forEach((panel) => {
+    panel.hidden = panel.dataset.subpanel !== name;
+  });
+  document.querySelectorAll("#phonebook-subtabs .chip").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.subtab === name);
+  });
 }
 
 function initNav() {
@@ -431,6 +482,11 @@ function initNav() {
     const btn = e.target.closest(".nav-btn");
     if (!btn) return;
     switchTab(btn.dataset.tab);
+  });
+  document.getElementById("phonebook-subtabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    switchSubtab(btn.dataset.subtab);
   });
 }
 
@@ -441,6 +497,8 @@ async function init() {
   renderKabbalasKahal();
   renderPhonebookFilters();
   renderPhonebook();
+  renderYeshivos();
+  renderShtieblach();
   renderNews();
   initNav();
   document.getElementById("phonebook-search").addEventListener("input", renderPhonebook);

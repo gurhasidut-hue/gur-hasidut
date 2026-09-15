@@ -88,6 +88,8 @@ async function boot() {
   renderTefillos();
   renderKabbalasKahal();
   renderPhonebook();
+  renderYeshivos();
+  renderShtieblach();
   renderNews();
   wireButtons();
   initNav();
@@ -248,6 +250,82 @@ async function savePhonebook(statusEl) {
 }
 
 /* =========================================================================
+   ישיבות
+   ========================================================================= */
+
+function renderYeshivos() {
+  const container = document.getElementById("yeshivos-items");
+  container.innerHTML = "";
+  (currentData.yeshivos || []).forEach((item) => container.appendChild(buildYeshivaCard(item)));
+}
+
+function buildYeshivaCard(item = {}) {
+  const div = document.createElement("div");
+  div.className = "card admin-card";
+  div.dataset.yeshivaItem = "1";
+  div.innerHTML = `
+    <input type="text" class="admin-input" data-field="name" placeholder="שם הישיבה" value="${escapeAttr(item.name)}">
+    <input type="text" class="admin-input" data-field="address" placeholder="כתובת (אופציונלי)" value="${escapeAttr(item.address)}">
+    <input type="tel" class="admin-input" data-field="phone" placeholder="טלפון (אופציונלי)" value="${escapeAttr(item.phone)}">
+    <button type="button" class="admin-remove-btn admin-remove-btn-full" title="הסרה">✕ הסרת רשומה</button>
+  `;
+  div.querySelector(".admin-remove-btn").addEventListener("click", () => div.remove());
+  return div;
+}
+
+async function saveYeshivos(statusEl) {
+  const items = [...document.querySelectorAll("#yeshivos-items > [data-yeshiva-item]")].map((card) => {
+    const name = card.querySelector('[data-field="name"]').value.trim();
+    const address = card.querySelector('[data-field="address"]').value.trim();
+    const phone = card.querySelector('[data-field="phone"]').value.trim();
+    const item = { name };
+    if (address) item.address = address;
+    if (phone) item.phone = phone;
+    return item;
+  }).filter((i) => i.name);
+
+  await saveField("yeshivos", items, statusEl);
+}
+
+/* =========================================================================
+   שטיבלך
+   ========================================================================= */
+
+function renderShtieblach() {
+  const container = document.getElementById("shtieblach-items");
+  container.innerHTML = "";
+  (currentData.shtieblach || []).forEach((item) => container.appendChild(buildShtiebelCard(item)));
+}
+
+function buildShtiebelCard(item = {}) {
+  const div = document.createElement("div");
+  div.className = "card admin-card";
+  div.dataset.shtiebelItem = "1";
+  div.innerHTML = `
+    <input type="text" class="admin-input" data-field="name" placeholder="שם השטיבל" value="${escapeAttr(item.name)}">
+    <input type="text" class="admin-input" data-field="address" placeholder="כתובת (אופציונלי)" value="${escapeAttr(item.address)}">
+    <input type="tel" class="admin-input" data-field="phone" placeholder="טלפון (אופציונלי)" value="${escapeAttr(item.phone)}">
+    <button type="button" class="admin-remove-btn admin-remove-btn-full" title="הסרה">✕ הסרת רשומה</button>
+  `;
+  div.querySelector(".admin-remove-btn").addEventListener("click", () => div.remove());
+  return div;
+}
+
+async function saveShtieblach(statusEl) {
+  const items = [...document.querySelectorAll("#shtieblach-items > [data-shtiebel-item]")].map((card) => {
+    const name = card.querySelector('[data-field="name"]').value.trim();
+    const address = card.querySelector('[data-field="address"]').value.trim();
+    const phone = card.querySelector('[data-field="phone"]').value.trim();
+    const item = { name };
+    if (address) item.address = address;
+    if (phone) item.phone = phone;
+    return item;
+  }).filter((i) => i.name);
+
+  await saveField("shtieblach", items, statusEl);
+}
+
+/* =========================================================================
    חדשות
    ========================================================================= */
 
@@ -298,6 +376,12 @@ function wireButtons() {
   document.getElementById("add-news-btn").addEventListener("click", () => {
     document.getElementById("news-items").prepend(buildNewsCard());
   });
+  document.getElementById("add-yeshiva-btn").addEventListener("click", () => {
+    document.getElementById("yeshivos-items").appendChild(buildYeshivaCard());
+  });
+  document.getElementById("add-shtiebel-btn").addEventListener("click", () => {
+    document.getElementById("shtieblach-items").appendChild(buildShtiebelCard());
+  });
 
   document.querySelectorAll("[data-save]").forEach((btn) => {
     const field = btn.dataset.save;
@@ -306,6 +390,8 @@ function wireButtons() {
       tefillos: saveTefillos,
       kabbalasKahal: saveKabbalasKahal,
       phonebook: savePhonebook,
+      yeshivos: saveYeshivos,
+      shtieblach: saveShtieblach,
       news: saveNews
     };
     btn.addEventListener("click", () => savers[field](statusEl));

@@ -40,22 +40,39 @@
   </section>
 
   <section id="tab-phonebook" class="tab-panel" data-panel="phonebook" hidden>
-    <div class="search-bar">
-      <input type="search" id="phonebook-search" placeholder="חיפוש לפי שם, תפקיד או טלפון…" autocomplete="off">
+    <div class="chip-row" id="phonebook-subtabs">
+      <button type="button" class="chip active" data-subtab="families">משפחות</button>
+      <button type="button" class="chip" data-subtab="yeshivos">ישיבות</button>
+      <button type="button" class="chip" data-subtab="shtieblach">שטיבלך</button>
+      <button type="button" class="chip" data-subtab="important">מספרים חשובים</button>
     </div>
-    <div id="phonebook-filters" class="chip-row"></div>
-    <div id="phonebook-content"></div>
-  </section>
 
-  <section id="tab-members" class="tab-panel" data-panel="members" hidden>
-    <div class="search-bar">
-      <input type="search" id="members-search" placeholder="חיפוש לפי שם משפחה, שם פרטי או עיר…" autocomplete="off">
+    <div class="subtab-panel" data-subpanel="families">
+      <div class="search-bar">
+        <input type="search" id="members-search" placeholder="חיפוש לפי שם משפחה, שם פרטי או עיר…" autocomplete="off">
+      </div>
+      <div id="members-country-filters" class="chip-row"></div>
+      <select id="members-city-select" class="city-select">
+        <option value="">כל הערים</option>
+      </select>
+      <div id="members-content"></div>
     </div>
-    <div id="members-country-filters" class="chip-row"></div>
-    <select id="members-city-select" class="city-select">
-      <option value="">כל הערים</option>
-    </select>
-    <div id="members-content"></div>
+
+    <div class="subtab-panel" data-subpanel="yeshivos" hidden>
+      <div id="yeshivos-content"></div>
+    </div>
+
+    <div class="subtab-panel" data-subpanel="shtieblach" hidden>
+      <div id="shtieblach-content"></div>
+    </div>
+
+    <div class="subtab-panel" data-subpanel="important" hidden>
+      <div class="search-bar">
+        <input type="search" id="phonebook-search" placeholder="חיפוש לפי שם, תפקיד או טלפון…" autocomplete="off">
+      </div>
+      <div id="phonebook-filters" class="chip-row"></div>
+      <div id="phonebook-content"></div>
+    </div>
   </section>
 
   <section id="tab-news" class="tab-panel" data-panel="news" hidden>
@@ -76,10 +93,6 @@
   <button class="nav-btn" data-tab="phonebook" type="button">
     <svg viewBox="0 0 24 24" class="nav-icon"><path d="M6 3h4l1.5 4.5L9 9.5a12 12 0 0 0 5.5 5.5l2-2.5L21 14v4a2 2 0 0 1-2 2C10.7 20 4 13.3 4 5a2 2 0 0 1 2-2Z"/></svg>
     <span>אלפון</span>
-  </button>
-  <button class="nav-btn" data-tab="members" type="button">
-    <svg viewBox="0 0 24 24" class="nav-icon"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><circle cx="17" cy="8.5" r="2.4"/><path d="M15.5 13.6c2.4.4 4 2.3 4 5.4"/></svg>
-    <span>אלפון חברים</span>
   </button>
   <button class="nav-btn" data-tab="news" type="button">
     <svg viewBox="0 0 24 24" class="nav-icon"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>

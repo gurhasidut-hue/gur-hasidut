@@ -58,11 +58,27 @@
   </section>
 
   <section class="tab-panel" data-panel="phonebook" hidden>
-    <h2 class="section-title">אלפון</h2>
+    <h2 class="section-title">מספרים חשובים</h2>
     <div id="contact-items"></div>
     <button type="button" class="admin-btn-add" id="add-contact-btn">+ הוספת איש קשר</button>
-    <button type="button" class="admin-btn-save" data-save="phonebook">שמירת אלפון</button>
+    <button type="button" class="admin-btn-save" data-save="phonebook">שמירת מספרים חשובים</button>
     <div class="admin-save-status" data-status="phonebook" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="yeshivos" hidden>
+    <h2 class="section-title">ישיבות</h2>
+    <div id="yeshivos-items"></div>
+    <button type="button" class="admin-btn-add" id="add-yeshiva-btn">+ הוספת ישיבה</button>
+    <button type="button" class="admin-btn-save" data-save="yeshivos">שמירת ישיבות</button>
+    <div class="admin-save-status" data-status="yeshivos" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="shtieblach" hidden>
+    <h2 class="section-title">שטיבלך</h2>
+    <div id="shtieblach-items"></div>
+    <button type="button" class="admin-btn-add" id="add-shtiebel-btn">+ הוספת שטיבל</button>
+    <button type="button" class="admin-btn-save" data-save="shtieblach">שמירת שטיבלך</button>
+    <div class="admin-save-status" data-status="shtieblach" hidden></div>
   </section>
 
   <section class="tab-panel" data-panel="news" hidden>
@@ -77,7 +93,9 @@
 <nav class="bottom-nav" id="bottom-nav">
   <button class="nav-btn active" data-tab="tefillos" type="button"><span>תפילות</span></button>
   <button class="nav-btn" data-tab="kabbalas-kahal" type="button"><span>קבלת קהל</span></button>
-  <button class="nav-btn" data-tab="phonebook" type="button"><span>אלפון</span></button>
+  <button class="nav-btn" data-tab="phonebook" type="button"><span>מספרים חשובים</span></button>
+  <button class="nav-btn" data-tab="yeshivos" type="button"><span>ישיבות</span></button>
+  <button class="nav-btn" data-tab="shtieblach" type="button"><span>שטיבלך</span></button>
   <button class="nav-btn" data-tab="news" type="button"><span>חדשות</span></button>
 </nav>
 
