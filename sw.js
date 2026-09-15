@@ -1,4 +1,4 @@
-const CACHE_NAME = "gur-hasidut-v2";
+const CACHE_NAME = "gur-hasidut-v3";
 const ASSETS = [
   "./",
   "./index.html",

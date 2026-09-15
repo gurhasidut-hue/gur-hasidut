@@ -274,3 +274,99 @@ main {
   .header-text h1 { font-size: 1.1rem; }
   .nav-btn span { font-size: 0.68rem; }
 }
+
+/* Admin */
+.admin-gate {
+  max-width: 360px;
+  margin: 15vh auto 0;
+  padding: 0 16px;
+  text-align: center;
+}
+.admin-gate h1 { color: var(--navy); font-size: 1.3rem; margin-bottom: 18px; }
+.admin-gate input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.admin-gate button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.admin-gate-error { color: #b3261e; font-size: 0.85rem; margin-top: 8px; }
+
+.admin-back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-card { display: flex; flex-direction: column; gap: 8px; }
+.admin-row-top { display: flex; gap: 8px; align-items: center; }
+.admin-input {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fff;
+}
+.admin-input:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+textarea.admin-input { resize: vertical; min-height: 70px; }
+.admin-group-name { font-weight: 700; }
+.admin-rows { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.admin-subrow { display: flex; gap: 6px; align-items: center; }
+.admin-input-narrow { max-width: 110px; flex-shrink: 0; }
+.admin-remove-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #b3261e;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.admin-remove-btn-full { width: auto; padding: 8px 12px; align-self: flex-start; }
+.admin-btn-add, .admin-btn-add-row {
+  border: 1px dashed var(--navy);
+  background: none;
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 6px 0 18px;
+  width: 100%;
+}
+.admin-btn-save {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 11px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 4px;
+}
+.admin-save-status { font-size: 0.82rem; color: var(--text-muted); margin-top: 6px; text-align: center; }
+.admin-load-status { text-align: center; padding: 40px 10px; color: var(--text-muted); }
