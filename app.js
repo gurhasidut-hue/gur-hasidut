@@ -248,6 +248,51 @@ function renderNews() {
   `).join("");
 }
 
+/* ---- התקנה כאפליקציה (PWA) ---- */
+function initInstallPrompt() {
+  const banner = document.getElementById("install-banner");
+  const installBtn = document.getElementById("install-btn");
+  const dismissBtn = document.getElementById("install-dismiss");
+  if (!banner) return;
+
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  if (isStandalone || localStorage.getItem("gur-install-dismissed") === "1") return;
+
+  const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  let deferredPrompt = null;
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.hidden = false;
+  });
+
+  if (isIos) {
+    banner.hidden = false;
+    installBtn.textContent = "איך מתקינים?";
+  }
+
+  installBtn.addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.hidden = true;
+    } else if (isIos) {
+      alert('להתקנה: הקישו על כפתור השיתוף בדפדפן (הריבוע עם החץ כלפי מעלה), ואז על "הוספה למסך הבית".');
+    }
+  });
+
+  dismissBtn.addEventListener("click", () => {
+    banner.hidden = true;
+    localStorage.setItem("gur-install-dismissed", "1");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    banner.hidden = true;
+  });
+}
+
 /* ---- ניווט בין טאבים ---- */
 function switchTab(tabName) {
   document.querySelectorAll(".tab-panel").forEach((panel) => {
@@ -268,6 +313,7 @@ function initNav() {
 }
 
 async function init() {
+  initInstallPrompt();
   DATA = await loadData();
   renderTefillos();
   renderKabbalasKahal();
