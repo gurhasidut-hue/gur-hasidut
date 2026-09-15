@@ -299,7 +299,7 @@ function renderMembers() {
     results = results.filter((m) => m.city && m.city.trim().toLowerCase() === cityKey);
   }
   if (query.length >= MEMBERS_MIN_QUERY) {
-    results = results.filter((m) => `${m.family} ${m.first} ${m.city} ${m.chossen}`.toLowerCase().includes(query));
+    results = results.filter((m) => `${m.family} ${m.first} ${m.city} ${m.chossen} ${m.father}`.toLowerCase().includes(query));
   }
 
   if (!results.length) {
@@ -323,6 +323,7 @@ function renderMembers() {
       <div class="kk-details">
         ${m.address ? `<div><span class="kk-label">כתובת:</span> ${escapeHtml(m.address)}</div>` : ""}
         ${homePhone ? `<div><span class="kk-label">בבית:</span> <a href="${formatPhoneHref(homePhone)}">${escapeHtml(homePhone)}</a></div>` : ""}
+        ${m.father ? `<div><span class="kk-label">אב:</span> ${escapeHtml(m.father)}</div>` : ""}
         ${m.chossen ? `<div><span class="kk-label">חם:</span> ${escapeHtml(m.chossen)}</div>` : ""}
       </div>
     </div>
