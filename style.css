@@ -305,6 +305,33 @@ main {
   cursor: pointer;
 }
 .admin-gate-error { color: #b3261e; font-size: 0.85rem; margin-top: 8px; }
+.admin-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.admin-signout-btn {
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: none;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+}
 
 .admin-back-link {
   display: inline-block;

@@ -5,14 +5,17 @@
    רגיל שנטען ישירות בדפדפן.
    ========================================================================= */
 
-import { db, doc, getDoc, setDoc } from "./firebase-init.js";
+import {
+  db, doc, getDoc, setDoc,
+  auth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from "./firebase-init.js";
 
-/* קוד הגישה לעמוד הניהול. אפשר לשנות כאן בכל עת (ואז לעשות commit+push). */
-const ADMIN_PASSCODE = "גור5785";
-const GATE_STORAGE_KEY = "gur-admin-ok";
+/* חשבונות Google מורשים לנהל תוכן. חייב להתאים גם לכללי ה-Rules ב-Firestore. */
+const ALLOWED_EMAILS = ["gurhasidut@gmail.com"];
 
 const SITE_DOC = doc(db, "site", "data");
 let currentData = null;
+let hasBooted = false;
 
 function escapeAttr(str) {
   return String(str ?? "").replace(/[&<>"']/g, (c) => ({
@@ -24,34 +27,44 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
-/* ---------- שער כניסה ---------- */
+/* ---------- שער כניסה (Google Sign-In) ---------- */
 function initGate() {
   const gate = document.getElementById("gate");
   const app = document.getElementById("admin-app");
-  const form = document.getElementById("gate-form");
-  const input = document.getElementById("gate-input");
-  const error = document.getElementById("gate-error");
+  const signInBtn = document.getElementById("google-signin-btn");
+  const deniedEl = document.getElementById("gate-denied");
+  const signOutBtn = document.getElementById("sign-out-btn");
+  const emailEl = document.getElementById("admin-user-email");
 
-  const enter = () => {
-    gate.hidden = true;
-    app.hidden = false;
-    boot();
-  };
+  signInBtn.addEventListener("click", async () => {
+    deniedEl.hidden = true;
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      deniedEl.hidden = false;
+      deniedEl.textContent = "שגיאה בהתחברות: " + err.message;
+    }
+  });
 
-  if (localStorage.getItem(GATE_STORAGE_KEY) === "1") {
-    enter();
-    return;
-  }
+  signOutBtn.addEventListener("click", () => signOut(auth));
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (input.value === ADMIN_PASSCODE) {
-      localStorage.setItem(GATE_STORAGE_KEY, "1");
-      enter();
+  onAuthStateChanged(auth, (user) => {
+    if (user && ALLOWED_EMAILS.includes(user.email)) {
+      gate.hidden = true;
+      app.hidden = false;
+      emailEl.textContent = user.email;
+      if (!hasBooted) {
+        hasBooted = true;
+        boot();
+      }
     } else {
-      error.hidden = false;
-      input.value = "";
-      input.focus();
+      app.hidden = true;
+      gate.hidden = false;
+      if (user) {
+        deniedEl.hidden = false;
+        deniedEl.textContent = `החשבון ${user.email} אינו מורשה לנהל את התוכן.`;
+        signOut(auth);
+      }
     }
   });
 }
