@@ -1,0 +1,276 @@
+:root {
+  color-scheme: light;
+  --navy: #1a3a5c;
+  --navy-dark: #12283f;
+  --gold: #a9812f;
+  --gold-light: #f3e9d2;
+  --bg: #f7f4ee;
+  --card-bg: #ffffff;
+  --text: #23303d;
+  --text-muted: #6b7684;
+  --border: #e3ddd0;
+  --radius: 14px;
+  --shadow: 0 1px 3px rgba(26, 58, 92, 0.08), 0 1px 2px rgba(26, 58, 92, 0.06);
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Header */
+.app-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+  color: #fff;
+  padding: 18px 16px calc(18px + env(safe-area-inset-top, 0px));
+  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+}
+.header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  border-radius: 10px;
+  flex-shrink: 0;
+  background: #fff;
+}
+.header-text h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.header-sub {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+}
+
+/* Main */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 14px 90px;
+}
+
+.tab-panel { animation: fade-in 0.15s ease; }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 22px 0 10px;
+}
+.section-title:first-child { margin-top: 0; }
+
+.section-note {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -4px 0 12px;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+/* Prayer times table */
+.tefillos-card .tefillos-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.tefillos-card .tefillos-row:last-child { border-bottom: none; }
+.tefillos-name { font-weight: 600; }
+.tefillos-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.tefillos-note {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Kabbalas kahal */
+.kk-card { display: flex; flex-direction: column; gap: 4px; }
+.kk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.kk-name { font-weight: 700; color: var(--navy); font-size: 1.02rem; }
+.kk-role { font-size: 0.8rem; color: var(--text-muted); }
+.kk-badge {
+  background: var(--gold-light);
+  color: #7a5c17;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.kk-details {
+  font-size: 0.87rem;
+  color: var(--text);
+  margin-top: 4px;
+}
+.kk-details div { margin-top: 2px; }
+.kk-details a { color: var(--navy); text-decoration: none; font-weight: 600; }
+.kk-label { color: var(--text-muted); font-weight: 600; }
+
+/* Search + chips */
+.search-bar { margin-bottom: 10px; }
+.search-bar input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: #fff;
+  font-family: inherit;
+}
+.search-bar input:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: 1px;
+}
+.chip-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+.chip {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chip.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+/* Phonebook list */
+.contact-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.contact-info { min-width: 0; }
+.contact-name { font-weight: 700; color: var(--navy); }
+.contact-role { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+.contact-phone {
+  flex-shrink: 0;
+  text-decoration: none;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: 10px;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 10px;
+  font-size: 0.9rem;
+}
+
+/* News */
+.news-card { }
+.news-date {
+  font-size: 0.75rem;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.news-title {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: var(--navy);
+  margin: 4px 0 6px;
+}
+.news-body { color: var(--text); font-size: 0.9rem; white-space: pre-line; }
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -2px 8px rgba(26,58,92,0.06);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 6px 2px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.nav-btn.active { color: var(--navy); font-weight: 700; }
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 380px) {
+  .header-text h1 { font-size: 1.1rem; }
+  .nav-btn span { font-size: 0.68rem; }
+}

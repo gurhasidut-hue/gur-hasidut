@@ -1,0 +1,23 @@
+{
+  "id": "./",
+  "name": "חסידות גור",
+  "short_name": "חסידות גור",
+  "description": "זמני תפילות, שעות קבלת קהל, אלפון וחדשות חסידות גור",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f4ee",
+  "theme_color": "#1a3a5c",
+  "lang": "he",
+  "dir": "rtl",
+  "categories": ["lifestyle", "news"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

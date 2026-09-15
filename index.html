@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>חסידות גור</title>
+<meta name="description" content="זמני תפילות, שעות קבלת קהל, אלפון וחדשות חסידות גור">
+<meta name="theme-color" content="#1a3a5c">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <img src="icon.svg" alt="" class="header-logo" width="40" height="40">
+    <div class="header-text">
+      <h1>חסידות גור</h1>
+      <p class="header-sub">זמני תפילות · קבלת קהל · אלפון · חדשות</p>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section id="tab-tefillos" class="tab-panel" data-panel="tefillos">
+    <div id="tefillos-content"></div>
+  </section>
+
+  <section id="tab-kabbalas-kahal" class="tab-panel" data-panel="kabbalas-kahal" hidden>
+    <div id="kabbalas-kahal-content"></div>
+  </section>
+
+  <section id="tab-phonebook" class="tab-panel" data-panel="phonebook" hidden>
+    <div class="search-bar">
+      <input type="search" id="phonebook-search" placeholder="חיפוש לפי שם, תפקיד או טלפון…" autocomplete="off">
+    </div>
+    <div id="phonebook-filters" class="chip-row"></div>
+    <div id="phonebook-content"></div>
+  </section>
+
+  <section id="tab-news" class="tab-panel" data-panel="news" hidden>
+    <div id="news-content"></div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-btn active" data-tab="tefillos" type="button">
+    <svg viewBox="0 0 24 24" class="nav-icon"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+    <span>תפילות</span>
+  </button>
+  <button class="nav-btn" data-tab="kabbalas-kahal" type="button">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M4 12a8 8 0 0 1 16 0"/><path d="M4 12v6a2 2 0 0 0 2 2h1v-6H5"/><path d="M20 12v6a2 2 0 0 1-2 2h-1v-6h2"/></svg>
+    <span>קבלת קהל</span>
+  </button>
+  <button class="nav-btn" data-tab="phonebook" type="button">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M6 3h4l1.5 4.5L9 9.5a12 12 0 0 0 5.5 5.5l2-2.5L21 14v4a2 2 0 0 1-2 2C10.7 20 4 13.3 4 5a2 2 0 0 1 2-2Z"/></svg>
+    <span>אלפון</span>
+  </button>
+  <button class="nav-btn" data-tab="news" type="button">
+    <svg viewBox="0 0 24 24" class="nav-icon"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+    <span>חדשות</span>
+  </button>
+</nav>
+
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

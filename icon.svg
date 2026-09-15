@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1a3a5c"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#a9812f" stroke-width="14"/>
+  <text x="256" y="300" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="220" fill="#f7f4ee">ג</text>
+</svg>
