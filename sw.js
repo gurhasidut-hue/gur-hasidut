@@ -1,9 +1,10 @@
-const CACHE_NAME = "gur-hasidut-v1";
+const CACHE_NAME = "gur-hasidut-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
+  "./firebase-init.js",
   "./manifest.json",
   "./icon.svg"
 ];

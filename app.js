@@ -1,11 +1,13 @@
 /* =========================================================================
    חסידות גור — נתוני האפליקציה
-   כל התוכן שמוצג באפליקציה (זמני תפילות, קבלת קהל, אלפון, חדשות) נמצא
-   בקבצים הבאים בתוך אובייקט אחד בשם DATA. כדי לעדכן תוכן, מספיק לערוך
-   את הערכים כאן ולשמור — אין צורך בשרת או במסד נתונים.
+   התוכן נטען בפועל מ-Firestore (ראו loadData למטה). האובייקט DEFAULT_DATA
+   כאן משמש כגיבוי: הוא נטען אם אין חיבור לאינטרנט/Firestore, וגם משמש
+   לזריעת המסד הנתונים בפעם הראשונה שהוא ריק.
    ========================================================================= */
 
-const DATA = {
+import { db, doc, getDoc, setDoc } from "./firebase-init.js";
+
+const DEFAULT_DATA = {
 
   /* ---- זמני תפילות ---- */
   tefillos: [
@@ -101,6 +103,27 @@ const DATA = {
     }
   ]
 };
+
+/* =========================================================================
+   טעינת נתונים מ-Firestore
+   ========================================================================= */
+
+let DATA = DEFAULT_DATA;
+const SITE_DOC = doc(db, "site", "data");
+
+async function loadData() {
+  try {
+    const snap = await getDoc(SITE_DOC);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    await setDoc(SITE_DOC, DEFAULT_DATA);
+    return DEFAULT_DATA;
+  } catch (err) {
+    console.warn("לא הצלחתי להתחבר ל-Firestore, משתמש בנתוני ברירת מחדל", err);
+    return DEFAULT_DATA;
+  }
+}
 
 /* =========================================================================
    רינדור וממשק
@@ -244,7 +267,8 @@ function initNav() {
   });
 }
 
-function init() {
+async function init() {
+  DATA = await loadData();
   renderTefillos();
   renderKabbalasKahal();
   renderPhonebookFilters();
