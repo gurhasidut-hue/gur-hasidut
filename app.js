@@ -299,7 +299,7 @@ function renderMembers() {
     results = results.filter((m) => m.city && m.city.trim().toLowerCase() === cityKey);
   }
   if (query.length >= MEMBERS_MIN_QUERY) {
-    results = results.filter((m) => `${m.family} ${m.first} ${m.city}`.toLowerCase().includes(query));
+    results = results.filter((m) => `${m.family} ${m.first} ${m.city} ${m.chossen}`.toLowerCase().includes(query));
   }
 
   if (!results.length) {
@@ -308,15 +308,26 @@ function renderMembers() {
   }
 
   const shown = results.slice(0, MEMBERS_MAX_RESULTS);
-  el.innerHTML = shown.map((m) => `
-    <div class="card contact-card">
-      <div class="contact-info">
-        <div class="contact-name">${escapeHtml(m.family)} ${escapeHtml(m.first)}</div>
-        <div class="contact-role">${escapeHtml(m.city)}</div>
+  el.innerHTML = shown.map((m) => {
+    const mainPhone = m.mobile || m.phone;
+    const homePhone = m.mobile && m.phone ? m.phone : "";
+    return `
+    <div class="card kk-card">
+      <div class="kk-header">
+        <div>
+          <div class="kk-name">${escapeHtml(m.family)} ${escapeHtml(m.first)}</div>
+          ${m.city ? `<div class="kk-role">${escapeHtml(m.city)}</div>` : ""}
+        </div>
+        ${mainPhone ? `<a class="kk-badge" href="${formatPhoneHref(mainPhone)}">התקשרות</a>` : ""}
       </div>
-      ${m.mobile || m.phone ? `<a class="contact-phone" href="${formatPhoneHref(m.mobile || m.phone)}">${escapeHtml(m.mobile || m.phone)}</a>` : ""}
+      <div class="kk-details">
+        ${m.address ? `<div><span class="kk-label">כתובת:</span> ${escapeHtml(m.address)}</div>` : ""}
+        ${homePhone ? `<div><span class="kk-label">בבית:</span> <a href="${formatPhoneHref(homePhone)}">${escapeHtml(homePhone)}</a></div>` : ""}
+        ${m.chossen ? `<div><span class="kk-label">חם:</span> ${escapeHtml(m.chossen)}</div>` : ""}
+      </div>
     </div>
-  `).join("") + (results.length > MEMBERS_MAX_RESULTS
+  `;
+  }).join("") + (results.length > MEMBERS_MAX_RESULTS
     ? `<div class="members-more">מוצגות ${MEMBERS_MAX_RESULTS} התוצאות הראשונות מתוך ${results.length.toLocaleString("he")} — צמצמו את החיפוש לתוצאה מדויקת יותר</div>`
     : "");
 }
