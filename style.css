@@ -172,6 +172,14 @@ main {
   padding: 3px 9px;
   border-radius: 20px;
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Phone numbers can contain a space (e.g. "03 6735131"); without this,
+   RTL bidi reordering visually swaps the two halves. */
+a[href^="tel:"] {
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 .kk-details {
   font-size: 0.87rem;

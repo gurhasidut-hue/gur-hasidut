@@ -170,7 +170,7 @@ function renderKabbalasKahal() {
           <div class="kk-name">${escapeHtml(item.name)}</div>
           <div class="kk-role">${escapeHtml(item.role)}</div>
         </div>
-        ${item.phone ? `<a class="kk-badge" href="${formatPhoneHref(item.phone)}">התקשרות</a>` : ""}
+        ${item.phone ? `<a class="kk-badge" href="${formatPhoneHref(item.phone)}">${escapeHtml(item.phone)}</a>` : ""}
       </div>
       <div class="kk-details">
         <div><span class="kk-label">שעות:</span> ${escapeHtml(item.days)}</div>
@@ -318,7 +318,7 @@ function renderMembers() {
           <div class="kk-name">${escapeHtml(m.family)} ${escapeHtml(m.first)}</div>
           ${m.city ? `<div class="kk-role">${escapeHtml(m.city)}</div>` : ""}
         </div>
-        ${mainPhone ? `<a class="kk-badge" href="${formatPhoneHref(mainPhone)}">התקשרות</a>` : ""}
+        ${mainPhone ? `<a class="kk-badge" href="${formatPhoneHref(mainPhone)}">${escapeHtml(mainPhone)}</a>` : ""}
       </div>
       <div class="kk-details">
         ${m.address ? `<div><span class="kk-label">כתובת:</span> ${escapeHtml(m.address)}</div>` : ""}
