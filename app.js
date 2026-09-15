@@ -226,6 +226,112 @@ function renderPhonebook() {
   `).join("");
 }
 
+/* ---- אלפון חברים (רשימה מלאה, נטענת מקובץ נפרד) ---- */
+let membersData = null;
+let membersLoadPromise = null;
+let membersInitStarted = false;
+let activeMembersCountry = "הכל";
+const MEMBERS_MAX_RESULTS = 150;
+const MEMBERS_MIN_QUERY = 2;
+
+function loadMembers() {
+  if (!membersLoadPromise) {
+    membersLoadPromise = fetch("phonebook-full.json")
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("HTTP " + res.status))))
+      .then((data) => { membersData = data; return data; })
+      .catch((err) => {
+        console.warn("לא הצלחתי לטעון את אלפון החברים", err);
+        membersData = [];
+        return membersData;
+      });
+  }
+  return membersLoadPromise;
+}
+
+function renderMembersCountryFilters() {
+  const options = ["הכל", "ארץ", "חול"];
+  const labels = { "הכל": "הכל", "ארץ": "ארץ", "חול": 'חו"ל' };
+  const el = document.getElementById("members-country-filters");
+  el.innerHTML = options.map((opt) => `
+    <button type="button" class="chip${opt === activeMembersCountry ? " active" : ""}" data-country="${escapeHtml(opt)}">${escapeHtml(labels[opt])}</button>
+  `).join("");
+  el.querySelectorAll(".chip").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeMembersCountry = btn.dataset.country;
+      renderMembersCountryFilters();
+      renderMembers();
+    });
+  });
+}
+
+function populateCitySelect() {
+  const select = document.getElementById("members-city-select");
+  const byKey = new Map();
+  membersData.forEach((m) => {
+    if (!m.city) return;
+    const key = m.city.trim().toLowerCase();
+    const entry = byKey.get(key) || { label: m.city.trim(), count: 0 };
+    entry.count += 1;
+    byKey.set(key, entry);
+  });
+  const cities = [...byKey.entries()]
+    .map(([key, v]) => ({ key, label: v.label }))
+    .sort((a, b) => a.label.localeCompare(b.label, "he"));
+  select.innerHTML = `<option value="">כל הערים</option>` +
+    cities.map((c) => `<option value="${escapeHtml(c.key)}">${escapeHtml(c.label)}</option>`).join("");
+}
+
+function renderMembers() {
+  const el = document.getElementById("members-content");
+  const query = (document.getElementById("members-search").value || "").trim().toLowerCase();
+  const cityKey = document.getElementById("members-city-select").value;
+
+  if (!cityKey && query.length < MEMBERS_MIN_QUERY) {
+    el.innerHTML = `<div class="members-hint">הקלידו שם משפחה, שם פרטי או עיר, או בחרו עיר מהרשימה (${membersData.length.toLocaleString("he")} אנשי קשר במאגר)</div>`;
+    return;
+  }
+
+  let results = membersData;
+  if (activeMembersCountry !== "הכל") {
+    results = results.filter((m) => m.country === activeMembersCountry);
+  }
+  if (cityKey) {
+    results = results.filter((m) => m.city && m.city.trim().toLowerCase() === cityKey);
+  }
+  if (query.length >= MEMBERS_MIN_QUERY) {
+    results = results.filter((m) => `${m.family} ${m.first} ${m.city}`.toLowerCase().includes(query));
+  }
+
+  if (!results.length) {
+    el.innerHTML = `<div class="empty-state">לא נמצאו תוצאות.</div>`;
+    return;
+  }
+
+  const shown = results.slice(0, MEMBERS_MAX_RESULTS);
+  el.innerHTML = shown.map((m) => `
+    <div class="card contact-card">
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(m.family)} ${escapeHtml(m.first)}</div>
+        <div class="contact-role">${escapeHtml(m.city)}</div>
+      </div>
+      ${m.mobile || m.phone ? `<a class="contact-phone" href="${formatPhoneHref(m.mobile || m.phone)}">${escapeHtml(m.mobile || m.phone)}</a>` : ""}
+    </div>
+  `).join("") + (results.length > MEMBERS_MAX_RESULTS
+    ? `<div class="members-more">מוצגות ${MEMBERS_MAX_RESULTS} התוצאות הראשונות מתוך ${results.length.toLocaleString("he")} — צמצמו את החיפוש לתוצאה מדויקת יותר</div>`
+    : "");
+}
+
+async function initMembers() {
+  const el = document.getElementById("members-content");
+  el.innerHTML = `<div class="members-hint">טוען אלפון…</div>`;
+  await loadMembers();
+  renderMembersCountryFilters();
+  populateCitySelect();
+  renderMembers();
+  document.getElementById("members-search").addEventListener("input", renderMembers);
+  document.getElementById("members-city-select").addEventListener("change", renderMembers);
+}
+
 function formatDate(isoDate) {
   const d = new Date(isoDate + "T00:00:00");
   if (isNaN(d)) return isoDate;
@@ -302,6 +408,10 @@ function switchTab(tabName) {
     btn.classList.toggle("active", btn.dataset.tab === tabName);
   });
   document.getElementById("main").scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  if (tabName === "members" && !membersInitStarted) {
+    membersInitStarted = true;
+    initMembers();
+  }
 }
 
 function initNav() {

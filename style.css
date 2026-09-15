@@ -220,6 +220,29 @@ main {
   border-color: var(--navy);
   color: #fff;
 }
+.city-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.88rem;
+  background: #fff;
+  font-family: inherit;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.members-hint {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 30px 10px;
+  font-size: 0.88rem;
+}
+.members-more {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 6px 0 16px;
+}
 
 /* Phonebook list */
 .contact-card {
