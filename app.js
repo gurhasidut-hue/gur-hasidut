@@ -1,11 +1,13 @@
 /* =========================================================================
    חסידות גור — נתוני האפליקציה
-   כל התוכן שמוצג באפליקציה (זמני תפילות, קבלת קהל, אלפון, חדשות) נמצא
-   בקבצים הבאים בתוך אובייקט אחד בשם DATA. כדי לעדכן תוכן, מספיק לערוך
-   את הערכים כאן ולשמור — אין צורך בשרת או במסד נתונים.
+   התוכן נטען בפועל מ-Firestore (ראו loadData למטה). האובייקט DEFAULT_DATA
+   כאן משמש כגיבוי: הוא נטען אם אין חיבור לאינטרנט/Firestore, וגם משמש
+   לזריעת המסד הנתונים בפעם הראשונה שהוא ריק.
    ========================================================================= */
 
-const DATA = {
+import { db, doc, getDoc, setDoc } from "./firebase-init.js";
+
+const DEFAULT_DATA = {
 
   /* ---- זמני תפילות ---- */
   tefillos: [
@@ -87,6 +89,12 @@ const DATA = {
     { name: "חברה קדישא", role: "ענייני קבורה", category: "חסד", phone: "050-0000006" }
   ],
 
+  /* ---- ישיבות ---- */
+  yeshivos: [],
+
+  /* ---- שטיבלך ---- */
+  shtieblach: [],
+
   /* ---- חדשות ---- (התאריך הראשון ברשימה מוצג ראשון) */
   news: [
     {
@@ -101,6 +109,27 @@ const DATA = {
     }
   ]
 };
+
+/* =========================================================================
+   טעינת נתונים מ-Firestore
+   ========================================================================= */
+
+let DATA = DEFAULT_DATA;
+const SITE_DOC = doc(db, "site", "data");
+
+async function loadData() {
+  try {
+    const snap = await getDoc(SITE_DOC);
+    if (snap.exists()) {
+      return snap.data();
+    }
+    await setDoc(SITE_DOC, DEFAULT_DATA);
+    return DEFAULT_DATA;
+  } catch (err) {
+    console.warn("לא הצלחתי להתחבר ל-Firestore, משתמש בנתוני ברירת מחדל", err);
+    return DEFAULT_DATA;
+  }
+}
 
 /* =========================================================================
    רינדור וממשק
@@ -147,7 +176,7 @@ function renderKabbalasKahal() {
           <div class="kk-name">${escapeHtml(item.name)}</div>
           <div class="kk-role">${escapeHtml(item.role)}</div>
         </div>
-        ${item.phone ? `<a class="kk-badge" href="${formatPhoneHref(item.phone)}">התקשרות</a>` : ""}
+        ${item.phone ? `<a class="kk-badge" href="${formatPhoneHref(item.phone)}">${escapeHtml(item.phone)}</a>` : ""}
       </div>
       <div class="kk-details">
         <div><span class="kk-label">שעות:</span> ${escapeHtml(item.days)}</div>
@@ -203,6 +232,160 @@ function renderPhonebook() {
   `).join("");
 }
 
+function renderYeshivos() {
+  const el = document.getElementById("yeshivos-content");
+  const list = DATA.yeshivos || [];
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state">אין כרגע ישיבות ברשימה.</div>`;
+    return;
+  }
+  el.innerHTML = list.map((y) => `
+    <div class="card contact-card">
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(y.name)}</div>
+        ${y.address ? `<div class="contact-role">${escapeHtml(y.address)}</div>` : ""}
+      </div>
+      ${y.phone ? `<a class="contact-phone" href="${formatPhoneHref(y.phone)}">${escapeHtml(y.phone)}</a>` : ""}
+    </div>
+  `).join("");
+}
+
+function renderShtieblach() {
+  const el = document.getElementById("shtieblach-content");
+  const list = DATA.shtieblach || [];
+  if (!list.length) {
+    el.innerHTML = `<div class="empty-state">אין כרגע שטיבלך ברשימה.</div>`;
+    return;
+  }
+  el.innerHTML = list.map((s) => `
+    <div class="card contact-card">
+      <div class="contact-info">
+        <div class="contact-name">${escapeHtml(s.name)}</div>
+        ${s.address ? `<div class="contact-role">${escapeHtml(s.address)}</div>` : ""}
+      </div>
+      ${s.phone ? `<a class="contact-phone" href="${formatPhoneHref(s.phone)}">${escapeHtml(s.phone)}</a>` : ""}
+    </div>
+  `).join("");
+}
+
+/* ---- אלפון חברים (רשימה מלאה, נטענת מקובץ נפרד) ---- */
+let membersData = null;
+let membersLoadPromise = null;
+let membersInitStarted = false;
+let activeMembersCountry = "הכל";
+const MEMBERS_MAX_RESULTS = 150;
+const MEMBERS_MIN_QUERY = 2;
+
+function loadMembers() {
+  if (!membersLoadPromise) {
+    membersLoadPromise = fetch("phonebook-full.json")
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error("HTTP " + res.status))))
+      .then((data) => { membersData = data; return data; })
+      .catch((err) => {
+        console.warn("לא הצלחתי לטעון את אלפון החברים", err);
+        membersData = [];
+        return membersData;
+      });
+  }
+  return membersLoadPromise;
+}
+
+function renderMembersCountryFilters() {
+  const options = ["הכל", "ארץ", "חול"];
+  const labels = { "הכל": "הכל", "ארץ": "ארץ", "חול": 'חו"ל' };
+  const el = document.getElementById("members-country-filters");
+  el.innerHTML = options.map((opt) => `
+    <button type="button" class="chip${opt === activeMembersCountry ? " active" : ""}" data-country="${escapeHtml(opt)}">${escapeHtml(labels[opt])}</button>
+  `).join("");
+  el.querySelectorAll(".chip").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeMembersCountry = btn.dataset.country;
+      renderMembersCountryFilters();
+      renderMembers();
+    });
+  });
+}
+
+function populateCitySelect() {
+  const select = document.getElementById("members-city-select");
+  const byKey = new Map();
+  membersData.forEach((m) => {
+    if (!m.city) return;
+    const key = m.city.trim().toLowerCase();
+    const entry = byKey.get(key) || { label: m.city.trim(), count: 0 };
+    entry.count += 1;
+    byKey.set(key, entry);
+  });
+  const cities = [...byKey.entries()]
+    .map(([key, v]) => ({ key, label: v.label }))
+    .sort((a, b) => a.label.localeCompare(b.label, "he"));
+  select.innerHTML = `<option value="">כל הערים</option>` +
+    cities.map((c) => `<option value="${escapeHtml(c.key)}">${escapeHtml(c.label)}</option>`).join("");
+}
+
+function renderMembers() {
+  const el = document.getElementById("members-content");
+  const query = (document.getElementById("members-search").value || "").trim().toLowerCase();
+  const cityKey = document.getElementById("members-city-select").value;
+
+  if (!cityKey && query.length < MEMBERS_MIN_QUERY) {
+    el.innerHTML = `<div class="members-hint">הקלידו שם משפחה, שם פרטי או עיר, או בחרו עיר מהרשימה (${membersData.length.toLocaleString("he")} אנשי קשר במאגר)</div>`;
+    return;
+  }
+
+  let results = membersData;
+  if (activeMembersCountry !== "הכל") {
+    results = results.filter((m) => m.country === activeMembersCountry);
+  }
+  if (cityKey) {
+    results = results.filter((m) => m.city && m.city.trim().toLowerCase() === cityKey);
+  }
+  if (query.length >= MEMBERS_MIN_QUERY) {
+    results = results.filter((m) => `${m.family} ${m.first} ${m.city} ${m.chossen} ${m.father}`.toLowerCase().includes(query));
+  }
+
+  if (!results.length) {
+    el.innerHTML = `<div class="empty-state">לא נמצאו תוצאות.</div>`;
+    return;
+  }
+
+  const shown = results.slice(0, MEMBERS_MAX_RESULTS);
+  el.innerHTML = shown.map((m) => {
+    const mainPhone = m.mobile || m.phone;
+    const homePhone = m.mobile && m.phone ? m.phone : "";
+    return `
+    <div class="card kk-card">
+      <div class="kk-header">
+        <div>
+          <div class="kk-name">${escapeHtml(m.family)} ${escapeHtml(m.first)}</div>
+          ${m.city ? `<div class="kk-role">${escapeHtml(m.city)}</div>` : ""}
+        </div>
+        ${mainPhone ? `<a class="kk-badge" href="${formatPhoneHref(mainPhone)}">${escapeHtml(mainPhone)}</a>` : ""}
+      </div>
+      <div class="kk-details">
+        ${m.address ? `<div><span class="kk-label">כתובת:</span> ${escapeHtml(m.address)}</div>` : ""}
+        ${homePhone ? `<div><span class="kk-label">בבית:</span> <a href="${formatPhoneHref(homePhone)}">${escapeHtml(homePhone)}</a></div>` : ""}
+        ${m.father ? `<div><span class="kk-label">אב:</span> ${escapeHtml(m.father)}</div>` : ""}
+        ${m.chossen ? `<div><span class="kk-label">חם:</span> ${escapeHtml(m.chossen)}</div>` : ""}
+      </div>
+    </div>
+  `;
+  }).join("") + (results.length > MEMBERS_MAX_RESULTS
+    ? `<div class="members-more">מוצגות ${MEMBERS_MAX_RESULTS} התוצאות הראשונות מתוך ${results.length.toLocaleString("he")} — צמצמו את החיפוש לתוצאה מדויקת יותר</div>`
+    : "");
+}
+
+async function initMembers() {
+  const el = document.getElementById("members-content");
+  el.innerHTML = `<div class="members-hint">טוען אלפון…</div>`;
+  await loadMembers();
+  renderMembersCountryFilters();
+  populateCitySelect();
+  renderMembers();
+  document.getElementById("members-search").addEventListener("input", renderMembers);
+  document.getElementById("members-city-select").addEventListener("change", renderMembers);
+}
+
 function formatDate(isoDate) {
   const d = new Date(isoDate + "T00:00:00");
   if (isNaN(d)) return isoDate;
@@ -225,6 +408,51 @@ function renderNews() {
   `).join("");
 }
 
+/* ---- התקנה כאפליקציה (PWA) ---- */
+function initInstallPrompt() {
+  const banner = document.getElementById("install-banner");
+  const installBtn = document.getElementById("install-btn");
+  const dismissBtn = document.getElementById("install-dismiss");
+  if (!banner) return;
+
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  if (isStandalone || localStorage.getItem("gur-install-dismissed") === "1") return;
+
+  const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  let deferredPrompt = null;
+
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    banner.hidden = false;
+  });
+
+  if (isIos) {
+    banner.hidden = false;
+    installBtn.textContent = "איך מתקינים?";
+  }
+
+  installBtn.addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.hidden = true;
+    } else if (isIos) {
+      alert('להתקנה: הקישו על כפתור השיתוף בדפדפן (הריבוע עם החץ כלפי מעלה), ואז על "הוספה למסך הבית".');
+    }
+  });
+
+  dismissBtn.addEventListener("click", () => {
+    banner.hidden = true;
+    localStorage.setItem("gur-install-dismissed", "1");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    banner.hidden = true;
+  });
+}
+
 /* ---- ניווט בין טאבים ---- */
 function switchTab(tabName) {
   document.querySelectorAll(".tab-panel").forEach((panel) => {
@@ -234,6 +462,19 @@ function switchTab(tabName) {
     btn.classList.toggle("active", btn.dataset.tab === tabName);
   });
   document.getElementById("main").scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+  if (tabName === "phonebook" && !membersInitStarted) {
+    membersInitStarted = true;
+    initMembers();
+  }
+}
+
+function switchSubtab(name) {
+  document.querySelectorAll("#tab-phonebook .subtab-panel").forEach((panel) => {
+    panel.hidden = panel.dataset.subpanel !== name;
+  });
+  document.querySelectorAll("#phonebook-subtabs .chip").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.subtab === name);
+  });
 }
 
 function initNav() {
@@ -242,13 +483,22 @@ function initNav() {
     if (!btn) return;
     switchTab(btn.dataset.tab);
   });
+  document.getElementById("phonebook-subtabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".chip");
+    if (!btn) return;
+    switchSubtab(btn.dataset.subtab);
+  });
 }
 
-function init() {
+async function init() {
+  initInstallPrompt();
+  DATA = await loadData();
   renderTefillos();
   renderKabbalasKahal();
   renderPhonebookFilters();
   renderPhonebook();
+  renderYeshivos();
+  renderShtieblach();
   renderNews();
   initNav();
   document.getElementById("phonebook-search").addEventListener("input", renderPhonebook);

@@ -23,6 +23,12 @@
   </div>
 </header>
 
+<div id="install-banner" class="install-banner" hidden>
+  <span class="install-banner-text">אפשר להתקין את האתר כאפליקציה במסך הבית</span>
+  <button type="button" id="install-btn" class="install-banner-btn">התקנה</button>
+  <button type="button" id="install-dismiss" class="install-banner-close" aria-label="סגירה">✕</button>
+</div>
+
 <main id="main">
 
   <section id="tab-tefillos" class="tab-panel" data-panel="tefillos">
@@ -34,11 +40,39 @@
   </section>
 
   <section id="tab-phonebook" class="tab-panel" data-panel="phonebook" hidden>
-    <div class="search-bar">
-      <input type="search" id="phonebook-search" placeholder="חיפוש לפי שם, תפקיד או טלפון…" autocomplete="off">
+    <div class="chip-row" id="phonebook-subtabs">
+      <button type="button" class="chip active" data-subtab="families">משפחות</button>
+      <button type="button" class="chip" data-subtab="yeshivos">ישיבות</button>
+      <button type="button" class="chip" data-subtab="shtieblach">שטיבלך</button>
+      <button type="button" class="chip" data-subtab="important">מספרים חשובים</button>
     </div>
-    <div id="phonebook-filters" class="chip-row"></div>
-    <div id="phonebook-content"></div>
+
+    <div class="subtab-panel" data-subpanel="families">
+      <div class="search-bar">
+        <input type="search" id="members-search" placeholder="חיפוש לפי שם משפחה, שם פרטי או עיר…" autocomplete="off">
+      </div>
+      <div id="members-country-filters" class="chip-row"></div>
+      <select id="members-city-select" class="city-select">
+        <option value="">כל הערים</option>
+      </select>
+      <div id="members-content"></div>
+    </div>
+
+    <div class="subtab-panel" data-subpanel="yeshivos" hidden>
+      <div id="yeshivos-content"></div>
+    </div>
+
+    <div class="subtab-panel" data-subpanel="shtieblach" hidden>
+      <div id="shtieblach-content"></div>
+    </div>
+
+    <div class="subtab-panel" data-subpanel="important" hidden>
+      <div class="search-bar">
+        <input type="search" id="phonebook-search" placeholder="חיפוש לפי שם, תפקיד או טלפון…" autocomplete="off">
+      </div>
+      <div id="phonebook-filters" class="chip-row"></div>
+      <div id="phonebook-content"></div>
+    </div>
   </section>
 
   <section id="tab-news" class="tab-panel" data-panel="news" hidden>
@@ -66,7 +100,7 @@
   </button>
 </nav>
 
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

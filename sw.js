@@ -1,9 +1,10 @@
-const CACHE_NAME = "gur-hasidut-v1";
+const CACHE_NAME = "gur-hasidut-v4";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
+  "./firebase-init.js",
   "./manifest.json",
   "./icon.svg"
 ];
@@ -24,6 +25,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  if (new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const network = fetch(event.request)

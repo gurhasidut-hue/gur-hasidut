@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ניהול תוכן — חסידות גור</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-gate" id="gate">
+  <h1>ניהול תוכן — חסידות גור</h1>
+  <button type="button" id="google-signin-btn" class="admin-google-btn">
+    <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.6 19 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.6 6 29.6 4 24 4c-7.5 0-14 4.2-17.7 10.4z"/>
+      <path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6c-2 1.5-4.6 2.4-7.7 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.6 5.1C9.9 39.7 16.4 44 24 44z"/>
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4 5.6l6.6 5.6C41.6 36 44 30.6 44 24c0-1.2-.1-2.4-.4-3.5z"/>
+    </svg>
+    <span>כניסה עם Google</span>
+  </button>
+  <div class="admin-gate-error" id="gate-denied" hidden></div>
+</div>
+
+<div id="admin-app" hidden>
+
+<header class="app-header">
+  <div class="header-inner">
+    <img src="icon.svg" alt="" class="header-logo" width="40" height="40">
+    <div class="header-text">
+      <h1>ניהול תוכן</h1>
+      <p class="header-sub" id="admin-user-email">חסידות גור</p>
+    </div>
+    <button type="button" id="sign-out-btn" class="admin-signout-btn">יציאה</button>
+  </div>
+</header>
+
+<main id="main">
+  <a class="admin-back-link" href="index.html">&#8592; חזרה לאתר</a>
+  <div class="admin-load-status" id="load-status">טוען נתונים…</div>
+
+  <section class="tab-panel" data-panel="tefillos">
+    <h2 class="section-title">זמני תפילות</h2>
+    <div id="tefillos-groups"></div>
+    <button type="button" class="admin-btn-add" id="add-group-btn">+ הוספת קבוצת זמנים</button>
+    <button type="button" class="admin-btn-save" data-save="tefillos">שמירת זמני תפילות</button>
+    <div class="admin-save-status" data-status="tefillos" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="kabbalas-kahal" hidden>
+    <h2 class="section-title">שעות קבלת קהל</h2>
+    <div id="kk-items"></div>
+    <button type="button" class="admin-btn-add" id="add-kk-btn">+ הוספת רשומה</button>
+    <button type="button" class="admin-btn-save" data-save="kabbalasKahal">שמירת קבלת קהל</button>
+    <div class="admin-save-status" data-status="kabbalasKahal" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="phonebook" hidden>
+    <h2 class="section-title">מספרים חשובים</h2>
+    <div id="contact-items"></div>
+    <button type="button" class="admin-btn-add" id="add-contact-btn">+ הוספת איש קשר</button>
+    <button type="button" class="admin-btn-save" data-save="phonebook">שמירת מספרים חשובים</button>
+    <div class="admin-save-status" data-status="phonebook" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="yeshivos" hidden>
+    <h2 class="section-title">ישיבות</h2>
+    <div id="yeshivos-items"></div>
+    <button type="button" class="admin-btn-add" id="add-yeshiva-btn">+ הוספת ישיבה</button>
+    <button type="button" class="admin-btn-save" data-save="yeshivos">שמירת ישיבות</button>
+    <div class="admin-save-status" data-status="yeshivos" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="shtieblach" hidden>
+    <h2 class="section-title">שטיבלך</h2>
+    <div id="shtieblach-items"></div>
+    <button type="button" class="admin-btn-add" id="add-shtiebel-btn">+ הוספת שטיבל</button>
+    <button type="button" class="admin-btn-save" data-save="shtieblach">שמירת שטיבלך</button>
+    <div class="admin-save-status" data-status="shtieblach" hidden></div>
+  </section>
+
+  <section class="tab-panel" data-panel="news" hidden>
+    <h2 class="section-title">חדשות</h2>
+    <div id="news-items"></div>
+    <button type="button" class="admin-btn-add" id="add-news-btn">+ הוספת חדשה</button>
+    <button type="button" class="admin-btn-save" data-save="news">שמירת חדשות</button>
+    <div class="admin-save-status" data-status="news" hidden></div>
+  </section>
+</main>
+
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="nav-btn active" data-tab="tefillos" type="button"><span>תפילות</span></button>
+  <button class="nav-btn" data-tab="kabbalas-kahal" type="button"><span>קבלת קהל</span></button>
+  <button class="nav-btn" data-tab="phonebook" type="button"><span>מספרים חשובים</span></button>
+  <button class="nav-btn" data-tab="yeshivos" type="button"><span>ישיבות</span></button>
+  <button class="nav-btn" data-tab="shtieblach" type="button"><span>שטיבלך</span></button>
+  <button class="nav-btn" data-tab="news" type="button"><span>חדשות</span></button>
+</nav>
+
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
